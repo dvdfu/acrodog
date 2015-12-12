@@ -1,3 +1,5 @@
+local Player = require('player')
+
 local Game = {}
 
 local function beginContact(a, b, coll) end
@@ -18,9 +20,13 @@ local function drawPhysics()
         for _, fixture in pairs(body:getFixtureList()) do
             local shape = fixture:getShape()
             if shape:getType() == 'circle' then
-                love.graphics.circle('line', body:getX(), body:getY(), shape:getRadius())
+                -- love.graphics.circle('line', body:getX(), body:getY(), shape:getRadius())
             elseif shape:getType() == 'polygon' then
                 love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
+            end
+            local data = fixture:getUserData()
+            if data and data.draw then
+                data.draw()
             end
         end
     end
@@ -78,16 +84,6 @@ function Game:enter()
         body = rsupport.body
     })
 
-    ball = {}
-    ball.body = love.physics.newBody(world, sw / 2 - 100, sh / 2 - 100, 'dynamic')
-    ball.body:setLinearDamping(0.1)
-    ball.fixture = love.physics.newFixture(ball.body, love.physics.newCircleShape(24))
-    ball.fixture:setRestitution(0.25)
-    ball.fixture:setUserData({
-        name = 'ball',
-        body = ball.body
-    })
-
     love.physics.newWheelJoint(floor.body, lsupport.body, lsupport.body:getX(), floor.body:getY(), -1, 0)
     love.physics.newWheelJoint(floor.body, rsupport.body, rsupport.body:getX(), floor.body:getY(), 1, 0)
     love.physics.newRevoluteJoint(floor.body, fulcrum.body, floor.body:getX(), floor.body:getY())
@@ -98,6 +94,8 @@ function Game:enter()
     rprism = love.physics.newPrismaticJoint(base.body, rsupport.body, rsupport.body:getX(), sh, 0, -1)
     rprism:setLimitsEnabled(true)
     rprism:setLimits(0, 160)
+
+    Player:new(world, sw / 2 - 100, sh / 2 - 100)
 end
 
 function Game:update(dt)
