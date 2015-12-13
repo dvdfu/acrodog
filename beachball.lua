@@ -4,7 +4,7 @@ local Beachball = Class('Beachball')
 local sprBall = love.graphics.newImage('assets/beachball.png')
 
 function Beachball:initialize(world, left)
-    local x, y = left and -64 or sw + 64, math.random(sh / 2)
+    local x, y = left and -64 or sw + 64, 0
     self.radius = 32
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'dynamic')

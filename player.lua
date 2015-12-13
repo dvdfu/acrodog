@@ -33,7 +33,7 @@ function Player:initialize(world, x, y)
                 if data.name == 'floor' then
                     self.grounded = true
                 elseif data.name == 'spotlight' then
-                    gui:toggleTimer(true)
+                    game:toggleTimer(true)
                 end
             end
         end,
@@ -43,7 +43,7 @@ function Player:initialize(world, x, y)
                 if data.name == 'floor' then
                     self.grounded = false
                 elseif data.name == 'spotlight' then
-                    gui:toggleTimer(false)
+                    game:toggleTimer(false)
                 end
             end
         end
@@ -68,7 +68,7 @@ end
 function Player:draw()
     self.sparkles:setPosition(self.ball.body:getX(), self.ball.body:getY())
     self.sparkles:update(1/60)
-    if gui.timerActive then
+    if game.timerActive then
         self.sparkles:emit(math.floor(math.random() * 1.5))
     end
     love.graphics.draw(self.sparkles)

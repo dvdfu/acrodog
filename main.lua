@@ -2,14 +2,12 @@ math.randomseed(os.time())
 love.graphics.setDefaultFilter('nearest', 'nearest')
 love.graphics.setLineStyle('rough')
 
-local Gamestate = require('gamestate')
 local Game = require('game')
 
 sw, sh = 384, 240
 
 function love.load()
-    Gamestate.registerEvents({ 'update' })
-    Gamestate.switch(Game)
+    game = Game:new()
 
     canvas = love.graphics.newCanvas(sw, sh)
     scaleShader = love.graphics.newShader[[
@@ -26,11 +24,15 @@ function love.load()
     scaleShader:send('scale', 2)
 end
 
+function love.update(dt)
+    game:update(dt)
+end
+
 function love.draw()
     canvas:clear()
     love.graphics.setCanvas(canvas)
     love.graphics.push()
-    Gamestate.draw()
+    game:draw()
     love.graphics.pop()
     love.graphics.setCanvas()
     love.graphics.setShader(scaleShader)
@@ -41,7 +43,5 @@ end
 function love.keypressed(k)
     if k == 'escape' then
         love.event.quit()
-    elseif k == ' ' then
-        Gamestate.switch(Game)
     end
 end
