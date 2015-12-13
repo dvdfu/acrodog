@@ -80,6 +80,7 @@ function Game:initialize()
 
     self.floor = Floor:new(self.world)
 
+    self.blinkTimer = 0
     self.timerActive = false
     self.time = 0
     self:gotoState('Menu')
@@ -145,6 +146,7 @@ function Menu:update(dt)
 end
 
 function Play:update(dt)
+    self.blinkTimer = self.blinkTimer + 1
     Game.update(self, dt)
     self.beachballTimer.update(dt)
     if self.timerActive then
@@ -170,7 +172,9 @@ function Play:update(dt)
     if self.timerActive then
         self.time = self.time + dt
     end
-    if self.player.ball.body:getY() - 12 > sh then
+    if self.player.ball.body:getY() - 12 > sh or
+        self.player.ball.body:getX() < 0 or
+        self.player.ball.body:getX() > sw then
         self:endGame()
     end
 end
@@ -209,6 +213,7 @@ end
 function Play:draw()
     Game.draw(self)
     self.spotlight:draw()
+    if not self.timerActive and self.blinkTimer % 20 < 10 then return end
     local s = math.floor(self.time)
     local cs = math.floor((self.time % 1) * 100)
     if cs < 10 then cs = '0'..cs end

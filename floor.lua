@@ -87,6 +87,12 @@ end
 
 function Floor:hitTomato(x, y)
     x, y = self.floor.body:getLocalPoint(x, y)
+    if x < 16-160 then
+        x = 16-160
+    elseif x > 160-16 then
+        x = 160-16
+    end
+
     table.insert(self.splatters, x)
 end
 
