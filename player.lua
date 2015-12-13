@@ -16,11 +16,24 @@ function Player:initialize(world, x, y)
     self.ball.fixture:setUserData({
         name = 'ball',
         body = self.ball.body,
-        draw = function() self:draw() end,
-        callback = function(other)
+        beginContact = function(other)
             local data = other:getUserData()
-            if data and data.name and data.name == 'floor' then
-                self.groundTimer = 30
+            if data and data.name then
+                if data.name == 'floor' then
+                    self.grounded = true
+                elseif data.name == 'spotlight' then
+                    score:toggleTimer(true)
+                end
+            end
+        end,
+        endContact = function(other)
+            local data = other:getUserData()
+            if data and data.name then
+                if data.name == 'floor' then
+                    self.grounded = false
+                elseif data.name == 'spotlight' then
+                    score:toggleTimer(false)
+                end
             end
         end
     })
@@ -29,13 +42,18 @@ function Player:initialize(world, x, y)
     self.jumpAnim = newAnimation(jumpSprite, 24, 24, 0.1, 4)
     self.idleAnim = newAnimation(idleSprite, 24, 24, 0.1, 4)
     self.anim = self.runAnim
+    self.grounded = false
     self.groundTimer = 30
 end
 
 function Player:draw()
-    -- print(self.grounded)
     local vx, vy = self.ball.body:getLinearVelocity()
     self.anim:update(1/60)
+    if self.grounded then
+        self.groundTimer = 10
+    else
+        self.groundTimer = self.groundTimer - 1
+    end
     if self.groundTimer < 0 then
         self.anim = self.jumpAnim
         self.anim:setSpeed(math.abs(vx / 140))

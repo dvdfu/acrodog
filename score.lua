@@ -1,22 +1,41 @@
 local Class = require('middleclass')
 local Score = Class('Score)')
 
+local font = love.graphics.newFont('assets/babyblue.ttf', 16)
+local borderShader = love.graphics.newShader[[
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+        vec4 pixel = Texel(texture, texture_coords);
+        pixel.rgb = vec3(0.0f);
+        return pixel;
+    }
+]]
+
 function Score:initialize()
-    self.score = 0
+    self.timerActive = false
     self.time = 0
     self.stopped = false
+    love.graphics.setFont(font)
 end
 
 function Score:update(dt)
-    self.time = self.time + dt
-    while self.time > 1 do
-        self.time = self.time - 1
-        self.score = self.score + 1
+    if self.timerActive then
+        self.time = self.time + dt
     end
 end
 
+function Score:toggleTimer(active)
+    self.timerActive = active
+end
+
 function Score:draw()
-    love.graphics.printf(self.score, sw / 2, 20, 0, 'center')
+    local s = math.floor(self.time)
+    local cs = math.floor((self.time % 1) * 100)
+    if cs < 10 then cs = '0'..cs end
+    local text = s..':'..cs
+    love.graphics.setShader(borderShader)
+    love.graphics.printf(text, sw / 2 + 1, 21, 0, 'left')
+    love.graphics.setShader()
+    love.graphics.printf(text, sw / 2, 20, 0, 'left')
 end
 
 return Score

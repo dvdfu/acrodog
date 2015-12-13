@@ -1,4 +1,5 @@
 love.graphics.setDefaultFilter('nearest', 'nearest')
+love.graphics.setLineStyle('rough')
 
 local Gamestate = require('gamestate')
 local Game = require('game')

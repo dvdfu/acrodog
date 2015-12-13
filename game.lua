@@ -1,6 +1,7 @@
-local Bone = require('bone')
+local Beachball = require('beachball')
 local Player = require('player')
 local Score = require('score')
+local Spotlight = require('spotlight')
 
 local sprSky = love.graphics.newImage('assets/sky.png')
 local sprFloor = love.graphics.newImage('assets/floor.png')
@@ -8,17 +9,21 @@ local song = love.audio.newSource('assets/song.mp3')
 
 local Game = {}
 
-local function beginContact(a, b, coll) end
+local function beginContact(a, b, coll)
+    local dataA, dataB = a:getUserData(), b:getUserData()
+    if dataA and dataA.beginContact then dataA.beginContact(b) end
+    if dataB and dataB.beginContact then dataB.beginContact(a) end
+end
 
-local function endContact(a, b, coll) end
+local function endContact(a, b, coll)
+    local dataA, dataB = a:getUserData(), b:getUserData()
+    if dataA and dataA.endContact then dataA.endContact(b) end
+    if dataB and dataB.endContact then dataB.endContact(a) end
+end
 
 local function preSolve(a, b, coll) end
 
-local function postSolve(a, b, coll, normalimpulse1, tangentimpulse1, normalimpulse2, tangentimpulse2)
-    local dataA, dataB = a:getUserData(), b:getUserData()
-    if dataA and dataA.callback then dataA.callback(b) end
-    if dataB and dataB.callback then dataB.callback(a) end
-end
+local function postSolve(a, b, coll, normalimpulse1, tangentimpulse1, normalimpulse2, tangentimpulse2) end
 
 local function drawPhysics()
     local bodies = world:getBodyList()
@@ -26,13 +31,9 @@ local function drawPhysics()
         for _, fixture in pairs(body:getFixtureList()) do
             local shape = fixture:getShape()
             if shape:getType() == 'circle' then
-                -- love.graphics.circle('line', body:getX(), body:getY(), shape:getRadius())
+                love.graphics.circle('line', body:getX(), body:getY(), shape:getRadius())
             elseif shape:getType() == 'polygon' then
-                -- love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
-            end
-            local data = fixture:getUserData()
-            if data and data.draw then
-                data.draw()
+                love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
             end
         end
     end
@@ -62,7 +63,6 @@ function Game:enter()
         name = 'floor',
         body = floor.body,
         draw = function()
-            love.graphics.draw(sprFloor, floor.body:getX(), floor.body:getY(), floor.body:getAngle(), 1, 1, 160, 4)
         end
     })
 
@@ -109,14 +109,14 @@ function Game:enter()
 
     score = Score:new()
     player = Player:new(world, sw / 2, sh / 2 - 100)
-    bone = Bone:new(world, sw / 2 - 100, sh / 2 - 100)
+    beachball = Beachball:new(world, sw / 2, 100)
+    spotlight = Spotlight:new(world)
     song:setLooping(true)
     song:play()
 end
 
 function Game:update(dt)
     score:update(dt)
-    player.groundTimer = player.groundTimer - 1
     world:update(dt)
     local force = 1200
     if love.keyboard.isDown('z') then
@@ -133,11 +133,16 @@ end
 
 function Game:draw()
     love.graphics.draw(sprSky, 0, 0, 0, 2, 2)
+    -- guidelines
     love.graphics.setColor(255, 255, 255, 64)
     love.graphics.line(sw / 2 - 160, sh - 36, sw / 2 + 160, sh - 36)
     love.graphics.line(sw / 2 - 160, sh - 90, sw / 2 + 160, sh - 90)
     love.graphics.setColor(255, 255, 255, 255)
-    drawPhysics()
+    -- drawPhysics()
+    love.graphics.draw(sprFloor, floor.body:getX(), floor.body:getY(), floor.body:getAngle(), 1, 1, 160, 4)
+    beachball:draw()
+    player:draw()
+    spotlight:draw()
     score:draw()
 end
 
