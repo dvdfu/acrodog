@@ -22,7 +22,7 @@ function Player:initialize(world, x, y)
                 if data.name == 'floor' then
                     self.grounded = true
                 elseif data.name == 'spotlight' then
-                    score:toggleTimer(true)
+                    gui:toggleTimer(true)
                 end
             end
         end,
@@ -32,7 +32,7 @@ function Player:initialize(world, x, y)
                 if data.name == 'floor' then
                     self.grounded = false
                 elseif data.name == 'spotlight' then
-                    score:toggleTimer(false)
+                    gui:toggleTimer(false)
                 end
             end
         end
