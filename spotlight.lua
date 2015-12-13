@@ -3,19 +3,22 @@ local Timer = require('timer')
 
 local Spotlight = Class('Spotlight')
 
-function Spotlight:initialize(world)
+function Spotlight:initialize(world, x, y)
     self.radius = 72
     self.circle = {}
-    self.circle.body = love.physics.newBody(world, sw / 2, -self.radius, 'kinematic')
+    self.circle.body = love.physics.newBody(world, x, y, 'kinematic')
     self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(self.radius))
     self.circle.fixture:setSensor(true)
     self.circle.fixture:setUserData({
         name = 'spotlight',
         body = self.circle.body
     })
+    
+    self.xTarget = x
+    self.yTarget = y
     self.delay = 5
     self.timer = Timer.new()
-    self:newTarget()
+    self.timer.after(self.delay, function() self:newTarget() end)
 end
 
 function Spotlight:newTarget()

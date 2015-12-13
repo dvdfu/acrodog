@@ -87,6 +87,8 @@ function Floor:draw()
     love.graphics.line(sw / 2 - 160, sh - 90, sw / 2 + 160, sh - 90)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(sprFloor, self.floor.body:getX(), self.floor.body:getY(), self.floor.body:getAngle(), 1, 1, 160, 4)
+    love.graphics.circle('fill', self.lsupport.body:getX() - 4, self.lsupport.body:getY() - 8, 8, 8 * 4)
+    love.graphics.circle('fill', self.rsupport.body:getX() - 4, self.rsupport.body:getY() - 8, 8, 8 * 4)
     love.graphics.draw(sprPillar, self.lsupport.body:getX(), self.lsupport.body:getY() - 12, 0, 1, 6, 8, 0)
     love.graphics.draw(sprPillar, self.rsupport.body:getX(), self.rsupport.body:getY() - 12, 0, 1, 6, 8, 0)
 end

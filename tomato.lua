@@ -19,14 +19,15 @@ function Tomato:initialize(world, left)
             local data = other:getUserData()
             if data and data.name then
                 if data.name == 'floor' then
-                    tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
-                    tomatoChunks:emit(9)
+                    game.tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
+                    game.tomatoChunks:emit(9)
                     self.dead = true
                 elseif data.name == 'player' then
-                    tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
-                    tomatoChunks:emit(9)
+                    game.tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
+                    game.tomatoChunks:emit(9)
                     self.dead = true
                     data.player.red = true
+                    game:endGame()
                 end
             end
         end

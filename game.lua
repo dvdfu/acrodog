@@ -78,7 +78,6 @@ function Game:initialize()
     self.beachballTimer.after(10, function() self:addBeachball() end)
 
     self.floor = Floor:new(self.world)
-    self.player = Player:new(self.world, sw / 2, -12)
 
     self.timerActive = false
     self.time = 0
@@ -86,19 +85,28 @@ function Game:initialize()
     love.graphics.setFont(font)
 end
 
-function Game:leave()
-    songMain:stop()
-    songBack:stop()
-end
+function Game:endGame() end
 
 function Play:enteredState()
-    spotlight = Spotlight:new(self.world)
+    self.player = Player:new(self.world, sw / 2, -12)
+    self.spotlight = Spotlight:new(self.world, sw / 2, sh / 2)
     songTimer = 1
     songMain:setLooping(true)
     songMain:play()
     songBack:setLooping(true)
     songBack:play()
     songBack:setVolume(0)
+end
+
+function Play:endGame()
+    self:gotoState('End')
+end
+
+function End:enteredState()
+    self.spotlight.circle.body:destroy()
+    songMain:stop()
+    songBack:stop()
+    songEnd:play()
 end
 
 function Game:toggleTimer(active)
@@ -119,25 +127,6 @@ end
 function Game:update(dt)
     self.floor:update(dt)
     self.world:update(dt)
-
-    -- if gui.timerActive then
-    --     self.tomatoTimer = 0
-    --     if songTimer < 1 - dt then
-    --         songTimer = songTimer + dt
-    --     else
-    --         songTimer = 1
-    --     end
-    -- else
-    --     self.tomatoTimer = self.tomatoTimer + dt
-    --     if self.tomatoTimer > 1 and math.random() < 0.05 then
-    --         self:addTomato()
-    --     end
-    --     if songTimer > dt then
-    --         songTimer = songTimer - dt
-    --     else
-    --         songTimer = 0
-    --     end
-    -- end
 end
 
 function Menu:update(dt)
@@ -150,10 +139,31 @@ end
 function Play:update(dt)
     Game.update(self, dt)
     self.beachballTimer.update(dt)
+    if self.timerActive then
+        self.tomatoTimer = 0
+        if songTimer < 1 - dt then
+            songTimer = songTimer + dt
+        else
+            songTimer = 1
+        end
+    else
+        self.tomatoTimer = self.tomatoTimer + dt
+        if self.tomatoTimer > 1 and math.random() < 0.05 then
+            self:addTomato()
+        end
+        if songTimer > dt then
+            songTimer = songTimer - dt
+        else
+            songTimer = 0
+        end
+    end
     songMain:setVolume(0.2 + 0.8 * songTimer)
     songBack:setVolume(1 - (0.2 + 0.8 * songTimer))
     if self.timerActive then
         self.time = self.time + dt
+    end
+    if self.player.ball.body:getY() - 12 > sh then
+        self:endGame()
     end
 end
 
@@ -162,7 +172,9 @@ function Game:draw()
     self.floor:draw()
     self.tomatoChunks:update(1/60)
     love.graphics.draw(self.tomatoChunks)
-    self.player:draw()
+    if self.player then
+        self.player:draw()
+    end
     for key, tomato in pairs(self.tomatoes) do
         if tomato.dead then
             table.remove(self.tomatoes, key)
@@ -188,12 +200,21 @@ end
 
 function Play:draw()
     Game.draw(self)
-    spotlight:draw()
+    self.spotlight:draw()
     local s = math.floor(self.time)
     local cs = math.floor((self.time % 1) * 100)
     if cs < 10 then cs = '0'..cs end
     local text = s..':'..cs
-    self:drawText(text, sw / 2, 20, 0, 'left')
+    self:drawText(text, 0, 20, sw, 'center')
+end
+
+function End:draw()
+    Game.draw(self)
+    local s = math.floor(self.time)
+    local cs = math.floor((self.time % 1) * 100)
+    if cs < 10 then cs = '0'..cs end
+    local text = s..':'..cs
+    self:drawText("Lil Houndini stole the show for "..text.."s!\nBut it's time to go home...", 0, sh / 2 - 16, sw, 'center')
 end
 
 function Game:drawText(text, x, y, ...)
