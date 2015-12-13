@@ -4,7 +4,7 @@ local Timer = require('timer')
 local Spotlight = Class('Spotlight')
 
 function Spotlight:initialize(world)
-    self.radius = 48
+    self.radius = 72
     self.circle = {}
     self.circle.body = love.physics.newBody(world, sw / 2, -self.radius, 'kinematic')
     self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(self.radius))

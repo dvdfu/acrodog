@@ -7,7 +7,8 @@ local Tomato = require('tomato')
 
 local sprSky = love.graphics.newImage('assets/sky.png')
 local sprTomatoChunk = love.graphics.newImage('assets/tomato-chunk.png')
-local song = love.audio.newSource('assets/song.mp3')
+local songMain = love.audio.newSource('assets/song-main.mp3')
+local songBack = love.audio.newSource('assets/song-back.mp3')
 
 local Game = {}
 
@@ -54,14 +55,18 @@ function Game:enter()
     tomatoChunks:setLinearAcceleration(0, 200)
     tomatoChunks:setSpeed(50, 200)
     tomatoChunks:setSizes(1, 0.3)
+    tomatoTimer = 0
 
     gui = GUI:new()
     floor = Floor:new(world)
     player = Player:new(world, sw / 2, sh / 2 - 100)
 
     spotlight = Spotlight:new(world)
-    song:setLooping(true)
-    song:play()
+    songTimer = 0
+    songMain:setLooping(true)
+    songMain:play()
+    songBack:setLooping(true)
+    songBack:play()
 end
 
 function Game:addTomato()
@@ -73,9 +78,27 @@ function Game:update(dt)
     gui:update(dt)
     floor:update(dt)
     world:update(dt)
-    if math.random() < 0.01 then
-        self:addTomato()
+
+    if gui.timerActive then
+        tomatoTimer = 0
+        if songTimer < 1 - dt then
+            songTimer = songTimer + dt
+        else
+            songTimer = 1
+        end
+    else
+        tomatoTimer = tomatoTimer + dt
+        if tomatoTimer > 2 and math.random() < 0.05 then
+            self:addTomato()
+        end
+        if songTimer > dt then
+            songTimer = songTimer - dt
+        else
+            songTimer = 0
+        end
     end
+    songMain:setVolume(0.2 + 0.8 * songTimer)
+    songBack:setVolume(1 - (0.2 + 0.8 * songTimer))
 end
 
 function Game:draw()
