@@ -10,8 +10,9 @@ function Player:initialize(world, x, y)
     self.ball = {}
     self.ball.body = love.physics.newBody(world, x, y, 'dynamic')
     self.ball.body:setLinearDamping(0.4)
+    self.ball.body:setAngularDamping(2)
     self.ball.fixture = love.physics.newFixture(self.ball.body, love.physics.newCircleShape(12))
-    -- self.ball.fixture:setRestitution(0.25)
+    self.ball.fixture:setDensity(3)
     self.ball.fixture:setUserData({
         name = 'ball',
         body = self.ball.body,
@@ -39,7 +40,7 @@ function Player:draw()
         self.anim = self.jumpAnim
         self.anim:setSpeed(math.abs(vx / 140))
     else
-        if (math.abs(vx) < 10) then
+        if (math.abs(vx) < 20) then
             self.anim:setSpeed(1)
             self.anim = self.idleAnim
         else

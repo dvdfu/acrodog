@@ -2,7 +2,9 @@ local Bone = require('bone')
 local Player = require('player')
 local Score = require('score')
 
-local sky = love.graphics.newImage('assets/sky.png')
+local sprSky = love.graphics.newImage('assets/sky.png')
+local sprFloor = love.graphics.newImage('assets/floor.png')
+local song = love.audio.newSource('assets/song.mp3')
 
 local Game = {}
 
@@ -26,7 +28,7 @@ local function drawPhysics()
             if shape:getType() == 'circle' then
                 -- love.graphics.circle('line', body:getX(), body:getY(), shape:getRadius())
             elseif shape:getType() == 'polygon' then
-                love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
+                -- love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
             end
             local data = fixture:getUserData()
             if data and data.draw then
@@ -58,7 +60,10 @@ function Game:enter()
     floor.fixture:setFriction(1)
     floor.fixture:setUserData({
         name = 'floor',
-        body = floor.body
+        body = floor.body,
+        draw = function()
+            love.graphics.draw(sprFloor, floor.body:getX(), floor.body:getY(), floor.body:getAngle(), 1, 1, 160, 4)
+        end
     })
 
     fulcrum = {}
@@ -97,14 +102,16 @@ function Game:enter()
     love.physics.newPrismaticJoint(fulcrum.body, base.body, sw / 2, sh, 0, 1)
     lprism = love.physics.newPrismaticJoint(base.body, lsupport.body, lsupport.body:getX(), sh, 0, -1)
     lprism:setLimitsEnabled(true)
-    lprism:setLimits(0, supportHeight * 2)
+    lprism:setLimits(0, 54)
     rprism = love.physics.newPrismaticJoint(base.body, rsupport.body, rsupport.body:getX(), sh, 0, -1)
     rprism:setLimitsEnabled(true)
-    rprism:setLimits(0, supportHeight * 2)
+    rprism:setLimits(0, 54)
 
     score = Score:new()
     player = Player:new(world, sw / 2, sh / 2 - 100)
     bone = Bone:new(world, sw / 2 - 100, sh / 2 - 100)
+    song:setLooping(true)
+    song:play()
 end
 
 function Game:update(dt)
@@ -125,7 +132,11 @@ function Game:update(dt)
 end
 
 function Game:draw()
-    love.graphics.draw(sky, 0, 0, 0, 2, 2)
+    love.graphics.draw(sprSky, 0, 0, 0, 2, 2)
+    love.graphics.setColor(255, 255, 255, 64)
+    love.graphics.line(sw / 2 - 160, sh - 36, sw / 2 + 160, sh - 36)
+    love.graphics.line(sw / 2 - 160, sh - 90, sw / 2 + 160, sh - 90)
+    love.graphics.setColor(255, 255, 255, 255)
     drawPhysics()
     score:draw()
 end
