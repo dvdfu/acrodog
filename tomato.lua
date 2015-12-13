@@ -36,9 +36,9 @@ function Tomato:initialize(world, left)
     self.anim = newAnimation(sprTomato, 16, 16, 0.1, 3)
 
     if left then
-        self.circle.body:applyLinearImpulse(14, -math.random(14))
+        self.circle.body:applyLinearImpulse(12, -math.random(12))
     else
-        self.circle.body:applyLinearImpulse(-14, -math.random(14))
+        self.circle.body:applyLinearImpulse(-12, -math.random(12))
     end
 end
 

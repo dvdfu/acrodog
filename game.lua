@@ -1,11 +1,12 @@
--- local Beachball = require('beachball')
+local Beachball = require('beachball')
 local Floor = require('floor')
 local GUI = require('gui')
 local Player = require('player')
 local Spotlight = require('spotlight')
 local Tomato = require('tomato')
+local Timer = require('timer')
 
-local sprSky = love.graphics.newImage('assets/sky.png')
+local sprBackground = love.graphics.newImage('assets/background.png')
 local sprTomatoChunk = love.graphics.newImage('assets/tomato-chunk.png')
 local songMain = love.audio.newSource('assets/song-main.mp3')
 local songBack = love.audio.newSource('assets/song-back.mp3')
@@ -58,6 +59,10 @@ function Game:enter()
     tomatoChunks:setSizes(1, 0.3)
     tomatoTimer = 0
 
+    beachballs = {}
+    beachballTimer = Timer.new()
+    beachballTimer.after(10, function() self:addBeachball() end)
+
     gui = GUI:new()
     floor = Floor:new(world)
     player = Player:new(world, sw / 2, sh / 2 - 100)
@@ -81,7 +86,14 @@ function Game:addTomato()
     table.insert(tomatoes, tomato)
 end
 
+function Game:addBeachball()
+    local beachball = Beachball:new(world, math.random() < 0.5)
+    table.insert(beachballs, beachball)
+    beachballTimer.after(10, function() self:addBeachball() end)
+end
+
 function Game:update(dt)
+    beachballTimer.update(dt)
     gui:update(dt)
     floor:update(dt)
     world:update(dt)
@@ -109,7 +121,7 @@ function Game:update(dt)
 end
 
 function Game:draw()
-    love.graphics.draw(sprSky, 0, 0, 0, 2, 2)
+    love.graphics.draw(sprBackground)
     floor:draw()
     -- beachball:draw()
     tomatoChunks:update(1/60)
@@ -121,6 +133,14 @@ function Game:draw()
             tomato.circle.body:destroy()
         else
             tomato:draw()
+        end
+    end
+    for key, beachball in pairs(beachballs) do
+        if beachball.dead then
+            table.remove(beachballs, key)
+            beachball.circle.body:destroy()
+        else
+            beachball:draw()
         end
     end
     spotlight:draw()
