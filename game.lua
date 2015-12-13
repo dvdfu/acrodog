@@ -9,6 +9,7 @@ local sprSky = love.graphics.newImage('assets/sky.png')
 local sprTomatoChunk = love.graphics.newImage('assets/tomato-chunk.png')
 local songMain = love.audio.newSource('assets/song-main.mp3')
 local songBack = love.audio.newSource('assets/song-back.mp3')
+local songEnd = love.audio.newSource('assets/song-end.mp3')
 
 local Game = {}
 
@@ -62,11 +63,17 @@ function Game:enter()
     player = Player:new(world, sw / 2, sh / 2 - 100)
 
     spotlight = Spotlight:new(world)
-    songTimer = 0
+    songTimer = 1
     songMain:setLooping(true)
     songMain:play()
     songBack:setLooping(true)
     songBack:play()
+    songBack:setVolume(0)
+end
+
+function Game:leave()
+    songMain:stop()
+    songBack:stop()
 end
 
 function Game:addTomato()
@@ -88,7 +95,7 @@ function Game:update(dt)
         end
     else
         tomatoTimer = tomatoTimer + dt
-        if tomatoTimer > 2 and math.random() < 0.05 then
+        if tomatoTimer > 1 and math.random() < 0.05 then
             self:addTomato()
         end
         if songTimer > dt then

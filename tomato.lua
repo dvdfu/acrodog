@@ -22,6 +22,11 @@ function Tomato:initialize(world, left)
                     tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
                     tomatoChunks:emit(9)
                     self.dead = true
+                elseif data.name == 'player' then
+                    tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
+                    tomatoChunks:emit(9)
+                    self.dead = true
+                    data.player.red = true
                 end
             end
         end
