@@ -9,6 +9,7 @@ local Tomato = require('tomato')
 
 local sprBackground = love.graphics.newImage('assets/background.png')
 local sprTomatoChunk = love.graphics.newImage('assets/tomato-chunk.png')
+local sprTitle = love.graphics.newImage('assets/title.png')
 local songMain = love.audio.newSource('assets/song-main.mp3')
 local songBack = love.audio.newSource('assets/song-back.mp3')
 local songEnd = love.audio.newSource('assets/song-end.mp3')
@@ -19,7 +20,8 @@ local Menu = Game:addState('Menu')
 local Play = Game:addState('Play')
 local End = Game:addState('End')
 
-local font = love.graphics.newFont('assets/babyblue.ttf', 16)
+local fontBig = love.graphics.newFont('assets/babyblue.ttf', 16)
+local fontSmall = love.graphics.newFont('assets/redalert.ttf', 13)
 local borderShader = love.graphics.newShader[[
     vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
         vec4 pixel = Texel(texture, texture_coords);
@@ -80,11 +82,9 @@ function Game:initialize()
 
     self.floor = Floor:new(self.world)
 
-    self.blinkTimer = 0
     self.timerActive = false
     self.time = 0
     self:gotoState('Menu')
-    love.graphics.setFont(font)
 end
 
 function Game:endGame() end
@@ -93,9 +93,11 @@ function Menu:enteredState()
     songMain:stop()
     songBack:stop()
     songEnd:stop()
+    self.blinkTimer = 0
 end
 
 function Play:enteredState()
+    self.blinkTimer = 0
     self.player = Player:new(self.world, sw / 2, -12)
     self.spotlight = Spotlight:new(self.world, sw / 2, sh / 2)
     self.songTimer = 1
@@ -139,6 +141,7 @@ function Game:update(dt)
 end
 
 function Menu:update(dt)
+    self.blinkTimer = self.blinkTimer + 1
     Game.update(self, dt)
     if love.keyboard.isDown('z') and love.keyboard.isDown('m') then
         self:gotoState('Play')
@@ -207,18 +210,23 @@ end
 
 function Menu:draw()
     Game.draw(self)
-    self:drawText('Hold Z and M to start', 0, sh / 2, sw, 'center')
+    love.graphics.draw(sprTitle, sw / 2, 16 + 4 * math.sin(self.blinkTimer / 10), 0, 1, 1, 160)
+    self:drawText(fontSmall, 'Hold Z and M to start', 0, sh / 2 + 34, sw, 'center')
+    self:drawText(fontSmall, 'Made for Ludum Dare 34 by @dvdfu', 0, sh / 2 + 96, sw, 'center')
 end
 
 function Play:draw()
     Game.draw(self)
     self.spotlight:draw()
+    if self.time < 4 then
+        self:drawText(fontSmall, 'Stand in the light\nto please the audience!', 0, sh / 2 - 12, sw, 'center')
+    end
     if not self.timerActive and self.blinkTimer % 20 < 10 then return end
     local s = math.floor(self.time)
     local cs = math.floor((self.time % 1) * 100)
     if cs < 10 then cs = '0'..cs end
     local text = s..':'..cs
-    self:drawText(text, 0, 20, sw, 'center')
+    self:drawText(fontBig, text, 0, 20, sw, 'center')
 end
 
 function End:draw()
@@ -235,10 +243,12 @@ function End:draw()
     else
         tomatoText = self.tomatoCount..' tomatoes were thrown.'
     end
-    self:drawText("Lil Houndini stole the show for "..text.."s!\n"..tomatoText.."\n\nPress R for an encore!", 0, sh / 2 - 64, sw, 'center')
+    self:drawText(fontBig, "Lil Houndini stole the show for "..text.."s!\n"..tomatoText, 0, sh / 2 - 64, sw, 'center')
+    self:drawText(fontSmall, "Press R for an encore.", 0, sh / 2 - 16, sw, 'center')
 end
 
-function Game:drawText(text, x, y, ...)
+function Game:drawText(font, text, x, y, ...)
+    love.graphics.setFont(font)
     love.graphics.setShader(borderShader)
     love.graphics.printf(text, x + 1, y + 1, ...)
     love.graphics.setShader()
