@@ -51,6 +51,7 @@ function Game:enter()
     floor.body = love.physics.newBody(world, sw / 2, sh - 80, 'dynamic')
     floor.shape = love.physics.newRectangleShape(640, 8)
     floor.fixture = love.physics.newFixture(floor.body, floor.shape)
+    floor.fixture:setFriction(1)
     floor.fixture:setUserData({
         name = 'floor',
         body = floor.body
@@ -95,10 +96,11 @@ function Game:enter()
     rprism:setLimitsEnabled(true)
     rprism:setLimits(0, 160)
 
-    Player:new(world, sw / 2 - 100, sh / 2 - 100)
+    player = Player:new(world, sw / 2, sh / 2 - 100)
 end
 
 function Game:update(dt)
+    player.groundTimer = player.groundTimer - 1
     world:update(dt)
     local force = 2000
     if love.keyboard.isDown('z') then
