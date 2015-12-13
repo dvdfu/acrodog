@@ -9,8 +9,8 @@ local sprDiamond = love.graphics.newImage('assets/diamond.png')
 local redShader = love.graphics.newShader[[
     vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
         vec4 pixel = Texel(texture, texture_coords);
-        pixel.r *= 1.5f;
-        pixel.g *= 0.8f;
+        pixel.r *= 1.2f;
+        pixel.g *= 0.5f;
         pixel.b *= 0.2f;
         return pixel;
     }

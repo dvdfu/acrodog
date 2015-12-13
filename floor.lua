@@ -97,10 +97,10 @@ function Floor:hitTomato(x, y)
 end
 
 function Floor:draw()
-    love.graphics.setColor(255, 255, 255, 64)
-    love.graphics.line(sw / 2 - 160, sh - 36, sw / 2 + 160, sh - 36)
-    love.graphics.line(sw / 2 - 160, sh - 90, sw / 2 + 160, sh - 90)
-    love.graphics.setColor(255, 255, 255, 255)
+    -- love.graphics.setColor(255, 255, 255, 64)
+    -- love.graphics.line(sw / 2 - 160, sh - 36, sw / 2 + 160, sh - 36)
+    -- love.graphics.line(sw / 2 - 160, sh - 90, sw / 2 + 160, sh - 90)
+    -- love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(sprFloor, self.floor.body:getX(), self.floor.body:getY(), self.floor.body:getAngle(), 1, 1, 160, 4)
     for _, splatter in pairs(self.splatters) do
         local x, y = self.floor.body:getWorldPoint(splatter, -4)

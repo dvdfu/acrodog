@@ -35,7 +35,7 @@ function Spotlight:draw()
     self.circle.body:setPosition(x + dx / 30, y + dy / 30)
 
     love.graphics.setBlendMode('additive')
-    love.graphics.setColor(255, 255, 128, 64)
+    love.graphics.setColor(255, 200, 80, 100)
     love.graphics.circle('fill', x, y, self.radius, self.radius * 4)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setBlendMode('alpha')

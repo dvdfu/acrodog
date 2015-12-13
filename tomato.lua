@@ -9,6 +9,7 @@ function Tomato:initialize(world, left)
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'dynamic')
     self.circle.body:setLinearDamping(0.4)
+    self.circle.body:setAngularVelocity(10)
     self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(6))
     self.circle.fixture:setRestitution(0.7)
     self.circle.fixture:setUserData({
@@ -49,7 +50,7 @@ function Tomato:draw()
     local speed = vx + vy
     self.anim:update(1/60)
     self.anim:setSpeed(math.abs(speed / 140))
-    self.anim:draw(self.circle.body:getX(), self.circle.body:getY(), 0, 1, 1, 8, 8)
+    self.anim:draw(self.circle.body:getX(), self.circle.body:getY(), self.circle.body:getAngle(), 1, 1, 8, 8)
 
     if self.circle.body:getY() - 8 > sh then
         self.dead = true
