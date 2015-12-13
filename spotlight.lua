@@ -13,7 +13,7 @@ function Spotlight:initialize(world, x, y)
         name = 'spotlight',
         body = self.circle.body
     })
-    
+
     self.xTarget = x
     self.yTarget = y
     self.delay = 5
@@ -22,9 +22,9 @@ function Spotlight:initialize(world, x, y)
 end
 
 function Spotlight:newTarget()
-    self.xTarget = math.random(32, sw - 32)
+    self.xTarget = math.random(16, sw - 16)
     self.yTarget = math.random(32, sh - 32)
-    self.delay = 5 -- math.min(4, gui.time / 7)
+    self.delay = 5 - math.min(4, game.time / 7)
     self.timer.after(self.delay, function() self:newTarget() end)
 end
 

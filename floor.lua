@@ -2,6 +2,7 @@ local Class = require('middleclass')
 local Floor = Class('Floor')
 
 local sprFloor = love.graphics.newImage('assets/floor.png')
+local sprSplatter = love.graphics.newImage('assets/tomato-splatter.png')
 local sprPillar = love.graphics.newImage('assets/pillar.png')
 
 function Floor:initialize(world)
@@ -22,7 +23,8 @@ function Floor:initialize(world)
     self.floor.fixture:setFriction(1)
     self.floor.fixture:setUserData({
         name = 'floor',
-        body = self.floor.body
+        body = self.floor.body,
+        floor = self
     })
 
     self.fulcrum = {}
@@ -65,6 +67,8 @@ function Floor:initialize(world)
     self.rprism = love.physics.newPrismaticJoint(self.base.body, self.rsupport.body, self.rsupport.body:getX(), sh, 0, -1)
     self.rprism:setLimitsEnabled(true)
     self.rprism:setLimits(0, 54)
+
+    self.splatters = {}
 end
 
 function Floor:update(dt)
@@ -81,12 +85,21 @@ function Floor:update(dt)
     end
 end
 
+function Floor:hitTomato(x, y)
+    x, y = self.floor.body:getLocalPoint(x, y)
+    table.insert(self.splatters, x)
+end
+
 function Floor:draw()
     love.graphics.setColor(255, 255, 255, 64)
     love.graphics.line(sw / 2 - 160, sh - 36, sw / 2 + 160, sh - 36)
     love.graphics.line(sw / 2 - 160, sh - 90, sw / 2 + 160, sh - 90)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(sprFloor, self.floor.body:getX(), self.floor.body:getY(), self.floor.body:getAngle(), 1, 1, 160, 4)
+    for _, splatter in pairs(self.splatters) do
+        local x, y = self.floor.body:getWorldPoint(splatter, -4)
+        love.graphics.draw(sprSplatter, x, y, self.floor.body:getAngle(), 1, 1, 16, 0)
+    end
     love.graphics.circle('fill', self.lsupport.body:getX() - 4, self.lsupport.body:getY() - 8, 8, 8 * 4)
     love.graphics.circle('fill', self.rsupport.body:getX() - 4, self.rsupport.body:getY() - 8, 8, 8 * 4)
     love.graphics.draw(sprPillar, self.lsupport.body:getX(), self.lsupport.body:getY() - 12, 0, 1, 6, 8, 0)

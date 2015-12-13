@@ -72,6 +72,7 @@ function Game:initialize()
     self.tomatoChunks:setSpeed(50, 200)
     self.tomatoChunks:setSizes(1, 0.3)
     self.tomatoTimer = 0
+    self.tomatoCount = 0
 
     self.beachballs = {}
     self.beachballTimer = Timer.new()
@@ -87,10 +88,16 @@ end
 
 function Game:endGame() end
 
+function Menu:enteredState()
+    songMain:stop()
+    songBack:stop()
+    songEnd:stop()
+end
+
 function Play:enteredState()
     self.player = Player:new(self.world, sw / 2, -12)
     self.spotlight = Spotlight:new(self.world, sw / 2, sh / 2)
-    songTimer = 1
+    self.songTimer = 1
     songMain:setLooping(true)
     songMain:play()
     songBack:setLooping(true)
@@ -116,6 +123,7 @@ end
 function Game:addTomato()
     local tomato = Tomato:new(self.world, math.random() < 0.5)
     table.insert(self.tomatoes, tomato)
+    self.tomatoCount = self.tomatoCount + 1
 end
 
 function Game:addBeachball()
@@ -141,24 +149,24 @@ function Play:update(dt)
     self.beachballTimer.update(dt)
     if self.timerActive then
         self.tomatoTimer = 0
-        if songTimer < 1 - dt then
-            songTimer = songTimer + dt
+        if self.songTimer < 1 - dt then
+            self.songTimer = self.songTimer + dt
         else
-            songTimer = 1
+            self.songTimer = 1
         end
     else
         self.tomatoTimer = self.tomatoTimer + dt
-        if self.tomatoTimer > 1 and math.random() < 0.05 then
+        if self.tomatoTimer > 1 and math.random() < 0.03 then
             self:addTomato()
         end
-        if songTimer > dt then
-            songTimer = songTimer - dt
+        if self.songTimer > dt then
+            self.songTimer = self.songTimer - dt
         else
-            songTimer = 0
+            self.songTimer = 0
         end
     end
-    songMain:setVolume(0.2 + 0.8 * songTimer)
-    songBack:setVolume(1 - (0.2 + 0.8 * songTimer))
+    songMain:setVolume(0.2 + 0.8 * self.songTimer)
+    songBack:setVolume(1 - (0.2 + 0.8 * self.songTimer))
     if self.timerActive then
         self.time = self.time + dt
     end
@@ -214,7 +222,15 @@ function End:draw()
     local cs = math.floor((self.time % 1) * 100)
     if cs < 10 then cs = '0'..cs end
     local text = s..':'..cs
-    self:drawText("Lil Houndini stole the show for "..text.."s!\nBut it's time to go home...", 0, sh / 2 - 16, sw, 'center')
+    local tomatoText
+    if self.tomatoCount == 0 then
+        tomatoText = 'Everyone loved him.'
+    elseif self.tomatoCount == 1 then
+        tomatoText = '1 tomato was thrown.'
+    else
+        tomatoText = self.tomatoCount..' tomatoes were thrown.'
+    end
+    self:drawText("Lil Houndini stole the show for "..text.."s!\n"..tomatoText.."\n\nPress R for an encore!", 0, sh / 2 - 64, sw, 'center')
 end
 
 function Game:drawText(text, x, y, ...)

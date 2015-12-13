@@ -9,7 +9,7 @@ function Tomato:initialize(world, left)
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'dynamic')
     self.circle.body:setLinearDamping(0.4)
-    self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(8))
+    self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(6))
     self.circle.fixture:setRestitution(0.7)
     self.circle.fixture:setUserData({
         name = 'tomato',
@@ -22,6 +22,7 @@ function Tomato:initialize(world, left)
                     game.tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
                     game.tomatoChunks:emit(9)
                     self.dead = true
+                    data.floor:hitTomato(self.circle.body:getX(), self.circle.body:getY())
                 elseif data.name == 'player' then
                     game.tomatoChunks:setPosition(self.circle.body:getX(), self.circle.body:getY())
                     game.tomatoChunks:emit(9)
@@ -44,7 +45,6 @@ function Tomato:initialize(world, left)
 end
 
 function Tomato:draw()
-
     local vx, vy = self.circle.body:getLinearVelocity()
     local speed = vx + vy
     self.anim:update(1/60)

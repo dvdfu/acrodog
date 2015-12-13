@@ -43,5 +43,7 @@ end
 function love.keypressed(k)
     if k == 'escape' then
         love.event.quit()
+    elseif k == 'r' then
+        game = Game:new()
     end
 end
