@@ -7,3 +7,6 @@
 [submodule "modules/love-misc-libs"]
 	path = modules/love-misc-libs
 	url = git@github.com:bartbes/love-misc-libs.git
+[submodule "modules/stateful"]
+	path = modules/stateful
+	url = git@github.com:kikito/stateful.lua.git

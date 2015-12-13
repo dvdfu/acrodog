@@ -10,7 +10,7 @@ function Player:initialize(world, x, y)
     self.ball = {}
     self.ball.body = love.physics.newBody(world, x, y, 'dynamic')
     self.ball.body:setLinearDamping(0.4)
-    self.ball.fixture = love.physics.newFixture(self.ball.body, love.physics.newCircleShape(24))
+    self.ball.fixture = love.physics.newFixture(self.ball.body, love.physics.newCircleShape(12))
     -- self.ball.fixture:setRestitution(0.25)
     self.ball.fixture:setUserData({
         name = 'ball',
@@ -47,7 +47,7 @@ function Player:draw()
             self.anim = self.runAnim
         end
     end
-    self.anim:draw(self.ball.body:getX(), self.ball.body:getY(), 0, vx > 0 and 2 or -2, 2, 12, 12)
+    self.anim:draw(self.ball.body:getX(), self.ball.body:getY(), 0, vx > 0 and 1 or -1, 1, 12, 12)
 end
 
 return Player

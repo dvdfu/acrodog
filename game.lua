@@ -1,4 +1,8 @@
+local Bone = require('bone')
 local Player = require('player')
+local Score = require('score')
+
+local sky = love.graphics.newImage('assets/sky.png')
 
 local Game = {}
 
@@ -32,12 +36,12 @@ local function drawPhysics()
     end
 end
 
-local sw, sh = 768, 480
-
 function Game:enter()
     love.physics.setMeter(64) --pixels per meter
     world = love.physics.newWorld(0, 640, true)
     world:setCallbacks(beginContact, endContact, preSolve, postSolve)
+
+    local supportHeight = 32
 
     base = {}
     base.body = love.physics.newBody(world, sw / 2, sh, 'static')
@@ -48,8 +52,8 @@ function Game:enter()
     })
 
     floor = {}
-    floor.body = love.physics.newBody(world, sw / 2, sh - 80, 'dynamic')
-    floor.shape = love.physics.newRectangleShape(640, 8)
+    floor.body = love.physics.newBody(world, sw / 2, sh - supportHeight, 'dynamic')
+    floor.shape = love.physics.newRectangleShape(320, 8)
     floor.fixture = love.physics.newFixture(floor.body, floor.shape)
     floor.fixture:setFriction(1)
     floor.fixture:setUserData({
@@ -58,18 +62,19 @@ function Game:enter()
     })
 
     fulcrum = {}
-    fulcrum.body = love.physics.newBody(world, sw / 2, sh - 80, 'dynamic')
+    fulcrum.body = love.physics.newBody(world, sw / 2, sh - supportHeight, 'dynamic')
     fulcrum.fixture = love.physics.newFixture(fulcrum.body, love.physics.newCircleShape(4))
     fulcrum.fixture:setUserData({
         name = 'fulcrum',
         body = fulcrum.body
     })
 
-    local supportShape = love.physics.newRectangleShape(8, 80)
+    local supportShape = love.physics.newRectangleShape(8, supportHeight)
 
     lsupport = {}
-    lsupport.body = love.physics.newBody(world, sw / 2 - 160, sh - 40, 'dynamic')
+    lsupport.body = love.physics.newBody(world, sw / 2 - 80, sh - supportHeight / 2, 'dynamic')
     lsupport.body:setGravityScale(0)
+    lsupport.body:setFixedRotation(true)
     lsupport.fixture = love.physics.newFixture(lsupport.body, supportShape)
     lsupport.fixture:setUserData({
         name = 'lsupport',
@@ -77,8 +82,9 @@ function Game:enter()
     })
 
     rsupport = {}
-    rsupport.body = love.physics.newBody(world, sw / 2 + 160, sh - 40, 'dynamic')
+    rsupport.body = love.physics.newBody(world, sw / 2 + 80, sh - supportHeight / 2, 'dynamic')
     rsupport.body:setGravityScale(0)
+    rsupport.body:setFixedRotation(true)
     rsupport.fixture = love.physics.newFixture(rsupport.body, supportShape)
     rsupport.fixture:setUserData({
         name = 'rsupport',
@@ -91,18 +97,21 @@ function Game:enter()
     love.physics.newPrismaticJoint(fulcrum.body, base.body, sw / 2, sh, 0, 1)
     lprism = love.physics.newPrismaticJoint(base.body, lsupport.body, lsupport.body:getX(), sh, 0, -1)
     lprism:setLimitsEnabled(true)
-    lprism:setLimits(0, 160)
+    lprism:setLimits(0, supportHeight * 2)
     rprism = love.physics.newPrismaticJoint(base.body, rsupport.body, rsupport.body:getX(), sh, 0, -1)
     rprism:setLimitsEnabled(true)
-    rprism:setLimits(0, 160)
+    rprism:setLimits(0, supportHeight * 2)
 
+    score = Score:new()
     player = Player:new(world, sw / 2, sh / 2 - 100)
+    bone = Bone:new(world, sw / 2 - 100, sh / 2 - 100)
 end
 
 function Game:update(dt)
+    score:update(dt)
     player.groundTimer = player.groundTimer - 1
     world:update(dt)
-    local force = 2000
+    local force = 1200
     if love.keyboard.isDown('z') then
         lsupport.body:applyForce(0, force)
     else
@@ -116,7 +125,9 @@ function Game:update(dt)
 end
 
 function Game:draw()
+    love.graphics.draw(sky, 0, 0, 0, 2, 2)
     drawPhysics()
+    score:draw()
 end
 
 return Game
