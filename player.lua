@@ -2,9 +2,10 @@ require('AnAL')
 local Class = require('middleclass')
 local Player = Class('Player')
 
-local runSprite = love.graphics.newImage('assets/dog-run.png')
-local jumpSprite = love.graphics.newImage('assets/dog-jump.png')
-local idleSprite = love.graphics.newImage('assets/dog-idle.png')
+local sprRun = love.graphics.newImage('assets/dog-run.png')
+local sprJump = love.graphics.newImage('assets/dog-jump.png')
+local sprIdle = love.graphics.newImage('assets/dog-idle.png')
+local sprDiamond = love.graphics.newImage('assets/diamond.png')
 
 function Player:initialize(world, x, y)
     self.ball = {}
@@ -38,15 +39,28 @@ function Player:initialize(world, x, y)
         end
     })
 
-    self.runAnim = newAnimation(runSprite, 24, 24, 0.1, 4)
-    self.jumpAnim = newAnimation(jumpSprite, 24, 24, 0.1, 4)
-    self.idleAnim = newAnimation(idleSprite, 24, 24, 0.1, 4)
+    self.runAnim = newAnimation(sprRun, 24, 24, 0.1, 4)
+    self.jumpAnim = newAnimation(sprJump, 24, 24, 0.1, 4)
+    self.idleAnim = newAnimation(sprIdle, 24, 24, 0.1, 4)
     self.anim = self.runAnim
     self.grounded = false
     self.groundTimer = 30
+    
+    self.sparkles = love.graphics.newParticleSystem(sprDiamond)
+    self.sparkles:setParticleLifetime(0, 0.7)
+    self.sparkles:setSpread(math.pi * 2)
+    self.sparkles:setSpeed(10, 100)
+    self.sparkles:setSizes(1, 0)
 end
 
 function Player:draw()
+    self.sparkles:setPosition(self.ball.body:getX(), self.ball.body:getY())
+    self.sparkles:update(1/60)
+    if gui.timerActive then
+        self.sparkles:emit(math.floor(math.random() * 1.5))
+    end
+    love.graphics.draw(self.sparkles)
+
     local vx, vy = self.ball.body:getLinearVelocity()
     self.anim:update(1/60)
     if self.grounded then

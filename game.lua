@@ -56,7 +56,7 @@ function Game:enter()
 end
 
 function Game:addTomato()
-    local tomato = Tomato:new(world, sw / 2, 0)
+    local tomato = Tomato:new(world, math.random() < 0.5)
     table.insert(tomatoes, tomato)
 end
 
