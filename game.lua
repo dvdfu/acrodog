@@ -13,6 +13,11 @@ local sprTitle = love.graphics.newImage('assets/title.png')
 local songMain = love.audio.newSource('assets/song-main.mp3')
 local songBack = love.audio.newSource('assets/song-back.mp3')
 local songEnd = love.audio.newSource('assets/song-end.mp3')
+local sfxOk = love.audio.newSource('assets/ok.wav')
+local sfxLose = love.audio.newSource('assets/lose.wav')
+local sfxThrow = love.audio.newSource('assets/throw.wav')
+sfxHit = love.audio.newSource('assets/hit.wav')
+sfxLower = love.audio.newSource('assets/lower.wav')
 
 local Game = Class('Game')
 Game:include(Stateful)
@@ -84,12 +89,19 @@ function Game:initialize()
 
     self.timerActive = false
     self.time = 0
+
+    sfxLose:setVolume(0.5)
+    sfxHit:setVolume(0.5)
+    sfxThrow:setVolume(0.5)
+    sfxLower:setVolume(0.5)
     self:gotoState('Menu')
 end
 
 function Game:endGame() end
 
 function Menu:enteredState()
+    sfxOk:stop()
+    sfxOk:play()
     songMain:stop()
     songBack:stop()
     songEnd:stop()
@@ -97,6 +109,8 @@ function Menu:enteredState()
 end
 
 function Play:enteredState()
+    sfxOk:stop()
+    sfxOk:play()
     self.blinkTimer = 0
     self.player = Player:new(self.world, sw / 2, -12)
     self.spotlight = Spotlight:new(self.world, sw / 2, sh / 2)
@@ -113,6 +127,8 @@ function Play:endGame()
 end
 
 function End:enteredState()
+    sfxLose:stop()
+    sfxLose:play()
     self.spotlight.circle.body:destroy()
     songMain:stop()
     songBack:stop()
@@ -127,6 +143,9 @@ function Game:addTomato()
     local tomato = Tomato:new(self.world, math.random() < 0.5)
     table.insert(self.tomatoes, tomato)
     self.tomatoCount = self.tomatoCount + 1
+    sfxThrow:setPitch(0.9 + 0.2 * math.random())
+    sfxThrow:stop()
+    sfxThrow:play()
 end
 
 function Game:addBeachball()
@@ -194,6 +213,9 @@ function Game:draw()
         if tomato.dead then
             table.remove(self.tomatoes, key)
             tomato.circle.body:destroy()
+            sfxHit:setPitch(0.9 + 0.2 * math.random())
+            sfxHit:stop()
+            sfxHit:play()
         else
             tomato:draw()
         end

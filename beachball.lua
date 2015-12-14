@@ -12,7 +12,17 @@ function Beachball:initialize(world, left)
     self.circle.fixture:setDensity(0.01)
     self.circle.fixture:setUserData({
         name = 'beachball',
-        body = self.circle.body
+        body = self.circle.body,
+        beginContact = function(other)
+            local data = other:getUserData()
+            if data and data.name then
+                if data.name == 'floor' then
+                    sfxHit:setPitch(0.5 + 0.2 * math.random())
+                    sfxHit:stop()
+                    sfxHit:play()
+                end
+            end
+        end
     })
 
     self.dead = false

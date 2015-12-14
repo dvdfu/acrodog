@@ -45,5 +45,9 @@ function love.keypressed(k)
         love.event.quit()
     elseif k == 'r' then
         game = Game:new()
+    elseif k == 'm' or k == 'z' then
+        sfxLower:setPitch(0.5 + 0.5 * math.random())
+        sfxLower:stop()
+        sfxLower:play()
     end
 end
