@@ -144,6 +144,7 @@ end
 
 
 function Game:addPoop()
+    if not self.player then return end
     local poop = Poop:new(self.world, self.player.ball.body:getX(), self.player.ball.body:getY())
     table.insert(self.poops, poop)
     sfxFart:setPitch(0.9 + 0.2 * math.random())

@@ -1,3 +1,8 @@
+package.path = '?/?.lua;'..package.path
+package.path = 'modules/?/?.lua;'..package.path
+package.path = 'modules/hump/?.lua;'..package.path
+package.path = 'modules/love-misc-libs/?/?.lua;'..package.path
+
 math.randomseed(os.time())
 love.graphics.setDefaultFilter('nearest', 'nearest')
 love.graphics.setLineStyle('rough')
