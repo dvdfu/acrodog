@@ -5,11 +5,12 @@ local Tomato = Class('Tomato')
 local sprTomato = love.graphics.newImage('assets/tomato.png')
 
 function Tomato:initialize(world, left)
-    local x, y = left and -16 or sw + 16, math.random(sh / 2)
+    local x, y = left and -16 or sw + 16, math.random(sh * 2 / 3)
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'dynamic')
-    self.circle.body:setLinearDamping(0.4)
+    self.circle.body:setLinearDamping(1)
     self.circle.body:setAngularVelocity(10)
+    self.circle.body:setGravityScale(0.4)
     self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(6))
     self.circle.fixture:setRestitution(0.7)
     self.circle.fixture:setUserData({
@@ -38,9 +39,9 @@ function Tomato:initialize(world, left)
     self.anim = newAnimation(sprTomato, 16, 16, 0.1, 3)
 
     if left then
-        self.circle.body:applyLinearImpulse(10, -math.random(10))
+        self.circle.body:applyLinearImpulse(math.random(5, 8), -math.random(8))
     else
-        self.circle.body:applyLinearImpulse(-10, -math.random(10))
+        self.circle.body:applyLinearImpulse(-math.random(5, 8), -math.random(8))
     end
 end
 

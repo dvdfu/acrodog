@@ -9,7 +9,7 @@ function Beachball:initialize(world, left)
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'dynamic')
     self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(self.radius))
-    self.circle.fixture:setDensity(0.01)
+    self.circle.fixture:setDensity(0.001)
     self.circle.fixture:setUserData({
         name = 'beachball',
         body = self.circle.body,

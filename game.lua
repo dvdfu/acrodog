@@ -203,7 +203,7 @@ function Play:update(dt)
         end
     else
         self.tomatoTimer = self.tomatoTimer + dt
-        if self.tomatoTimer > 1 and math.random() < 0.03 then
+        if self.tomatoTimer > 3 and math.random() < 0.03 then
             self:addTomato()
         end
         if self.songTimer > dt then

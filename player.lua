@@ -20,7 +20,7 @@ function Player:initialize(world, x, y)
     self.ball = {}
     self.ball.body = love.physics.newBody(world, x, y, 'dynamic')
     self.ball.body:setLinearDamping(0.4)
-    self.ball.body:setAngularDamping(2)
+    self.ball.body:setAngularDamping(4)
     self.ball.fixture = love.physics.newFixture(self.ball.body, love.physics.newCircleShape(12))
     self.ball.fixture:setDensity(3)
     self.ball.fixture:setUserData({
