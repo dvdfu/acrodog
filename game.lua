@@ -16,8 +16,8 @@ local songEnd = love.audio.newSource('assets/song-end.mp3')
 local sfxOk = love.audio.newSource('assets/ok.wav')
 local sfxLose = love.audio.newSource('assets/lose.wav')
 local sfxThrow = love.audio.newSource('assets/throw.wav')
+local sfxLower = love.audio.newSource('assets/lower.wav')
 sfxHit = love.audio.newSource('assets/hit.wav')
-sfxLower = love.audio.newSource('assets/lower.wav')
 
 local Game = Class('Game')
 Game:include(Stateful)
@@ -157,6 +157,12 @@ end
 function Game:update(dt)
     self.floor:update(dt)
     self.world:update(dt)
+
+    if Input:pressed('z') or Input:pressed('m') then
+        sfxLower:setPitch(0.5 + 0.5 * math.random())
+        sfxLower:stop()
+        sfxLower:play()
+    end
 end
 
 function Menu:update(dt)

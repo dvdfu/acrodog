@@ -3,6 +3,7 @@ love.graphics.setDefaultFilter('nearest', 'nearest')
 love.graphics.setLineStyle('rough')
 
 local Game = require('game')
+Input = require('input')
 
 sw, sh = 384, 240
 
@@ -26,6 +27,13 @@ end
 
 function love.update(dt)
     game:update(dt)
+    if Input:pressed('r') then
+        game = Game:new()
+    end
+    if Input:pressed('escape') then
+        love.event.quit()
+    end
+    Input:update()
 end
 
 function love.draw()
@@ -38,16 +46,4 @@ function love.draw()
     love.graphics.setShader(scaleShader)
     love.graphics.draw(canvas)
     love.graphics.setShader()
-end
-
-function love.keypressed(k)
-    if k == 'escape' then
-        love.event.quit()
-    elseif k == 'r' then
-        game = Game:new()
-    elseif k == 'm' or k == 'z' then
-        sfxLower:setPitch(0.5 + 0.5 * math.random())
-        sfxLower:stop()
-        sfxLower:play()
-    end
 end
