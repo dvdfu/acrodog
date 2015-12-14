@@ -15,7 +15,6 @@ function Tomato:initialize(world, left)
     self.circle.fixture:setUserData({
         name = 'tomato',
         body = self.circle.body,
-        draw = function() self:draw() end,
         beginContact = function(other)
             local data = other:getUserData()
             if data and data.name then

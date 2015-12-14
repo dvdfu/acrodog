@@ -2,6 +2,7 @@ local Class = require('middleclass')
 local Beachball = require('beachball')
 local Floor = require('floor')
 local Player = require('player')
+local Poop = require('poop')
 local Spotlight = require('spotlight')
 local Stateful = require('stateful')
 local Timer = require('timer')
@@ -17,6 +18,7 @@ local sfxOk = love.audio.newSource('assets/ok.wav')
 local sfxLose = love.audio.newSource('assets/lose.wav')
 local sfxThrow = love.audio.newSource('assets/throw.wav')
 local sfxLower = love.audio.newSource('assets/lower.wav')
+local sfxFart = love.audio.newSource('assets/fart.mp3')
 sfxHit = love.audio.newSource('assets/hit.wav')
 
 local Game = Class('Game')
@@ -85,6 +87,7 @@ function Game:initialize()
     self.beachballTimer = Timer.new()
     self.beachballTimer.after(10, function() self:addBeachball() end)
 
+    self.poops = {}
     self.floor = Floor:new(self.world)
 
     self.timerActive = false
@@ -139,6 +142,15 @@ function Game:toggleTimer(active)
     self.timerActive = active
 end
 
+
+function Game:addPoop()
+    local poop = Poop:new(self.world, self.player.ball.body:getX(), self.player.ball.body:getY())
+    table.insert(self.poops, poop)
+    sfxFart:setPitch(0.9 + 0.2 * math.random())
+    sfxFart:stop()
+    sfxFart:play()
+end
+
 function Game:addTomato()
     local tomato = Tomato:new(self.world, math.random() < 0.5)
     table.insert(self.tomatoes, tomato)
@@ -162,6 +174,10 @@ function Game:update(dt)
         sfxLower:setPitch(0.5 + 0.5 * math.random())
         sfxLower:stop()
         sfxLower:play()
+    end
+
+    if Input:pressed('p') then
+        self:addPoop()
     end
 end
 
@@ -232,6 +248,14 @@ function Game:draw()
             beachball.circle.body:destroy()
         else
             beachball:draw()
+        end
+    end
+    for key, poop in pairs(self.poops) do
+        if poop.dead then
+            table.remove(self.poops, key)
+            poop.circle.body:destroy()
+        else
+            poop:draw()
         end
     end
 end
