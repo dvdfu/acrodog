@@ -164,7 +164,9 @@ end
 function Game:addBeachball()
     local beachball = Beachball:new(self.world, math.random() < 0.5)
     table.insert(self.beachballs, beachball)
-    self.beachballTimer.after(10, function() self:addBeachball() end)
+    local delay = 20
+    delay = delay - math.min(self.time / 4, 15)
+    self.beachballTimer.after(delay, function() self:addBeachball() end)
 end
 
 function Game:update(dt)
@@ -203,7 +205,7 @@ function Play:update(dt)
         end
     else
         self.tomatoTimer = self.tomatoTimer + dt
-        if self.tomatoTimer > 3 and math.random() < 0.03 then
+        if self.tomatoTimer > 2 and math.random() < 0.03 then
             self:addTomato()
         end
         if self.songTimer > dt then

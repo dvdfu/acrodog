@@ -4,7 +4,7 @@ local Timer = require('timer')
 local Spotlight = Class('Spotlight')
 
 function Spotlight:initialize(world, x, y)
-    self.radius = 72
+    self.radius = 68
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'kinematic')
     self.circle.fixture = love.physics.newFixture(self.circle.body, love.physics.newCircleShape(self.radius))
@@ -23,8 +23,12 @@ end
 
 function Spotlight:newTarget()
     self.xTarget = math.random(16, sw - 16)
-    self.yTarget = math.random(32, sh - 32)
-    self.delay = 5 - math.min(4, game.time / 7)
+    self.yTarget = math.random(64, sh - 32)
+    self.delay = 5
+    local highChance = math.min(game.time / 50, 0.9)
+    if math.random() < highChance then
+        self.yTarget = self.yTarget / 3
+    end
     self.timer.after(self.delay, function() self:newTarget() end)
 end
 

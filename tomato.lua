@@ -5,7 +5,7 @@ local Tomato = Class('Tomato')
 local sprTomato = love.graphics.newImage('assets/tomato.png')
 
 function Tomato:initialize(world, left)
-    local x, y = left and -16 or sw + 16, math.random(sh * 2 / 3)
+    local x, y = left and -16 or sw + 16, sh / 3 + math.random(sh / 3)
     self.circle = {}
     self.circle.body = love.physics.newBody(world, x, y, 'dynamic')
     self.circle.body:setLinearDamping(1)
