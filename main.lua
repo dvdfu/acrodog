@@ -42,7 +42,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    canvas:clear()
+    love.graphics.clear()
     love.graphics.setCanvas(canvas)
     love.graphics.push()
     game:draw()
